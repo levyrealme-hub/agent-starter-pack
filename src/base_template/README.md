@@ -159,18 +159,7 @@ gcloud config set project <your-dev-project-id>
 make backend
 ```
 {% if cookiecutter.agent_name == 'live_api' %}
-**Accessing the Deployed Backend Locally:**
-
-To connect your local frontend (`make ui`) to the backend deployed on Cloud Run, use the `gcloud` proxy:
-
-1.  **Start the proxy:**
-    ```bash
-    # Replace with your actual service name, project, and region
-    gcloud run services proxy gemini-agent-service --port 8000 --project $PROJECT_ID --region $REGION
-    ```
-    Keep this terminal running.
-
-2.  **Connect Frontend:** Your deployed backend is now accessible locally at `http://localhost:8000`. Point your Streamlit UI to this address.
+**Note:** For secure access to your deployed backend, consider using Identity-Aware Proxy (IAP) by running `make backend IAP=true`.
 {%- endif %}
 
 The repository includes a Terraform configuration for the setup of the Dev Google Cloud project.
