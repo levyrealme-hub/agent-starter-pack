@@ -414,14 +414,14 @@ async def serve_frontend_root() -> FileResponse:
 @app.get("/{full_path:path}")
 async def serve_frontend_spa(full_path: str) -> FileResponse:
     """Catch-all route to serve the frontend for SPA routing.
-    
+
     This ensures that client-side routes are handled by the React app.
     Excludes API routes (ws, feedback) and static assets.
     """
     # Don't intercept API routes
     if full_path.startswith(("ws", "feedback", "static", "api")):
         raise HTTPException(status_code=404, detail="Not found")
-    
+
     # Serve index.html for all other routes (SPA routing)
     index_file = frontend_build_dir / "index.html"
     if index_file.exists():
@@ -431,7 +431,6 @@ async def serve_frontend_spa(full_path: str) -> FileResponse:
         detail="Frontend not built. Run 'npm run build' in the frontend directory.",
     )
 {% endif %}
-
 
 # Main execution
 if __name__ == "__main__":

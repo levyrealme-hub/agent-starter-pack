@@ -56,8 +56,7 @@ playground:{%- if cookiecutter.agent_name == 'live_api' %} build-frontend{%- end
 	uv run uvicorn {{cookiecutter.agent_directory}}.server:app --host 0.0.0.0 --port 8000 --reload &
 {%- endif %}
 {%- endif %}
-{%- if cookiecutter.agent_name == 'live_api' %}
-{%- else %}
+{%- if cookiecutter.agent_name != 'live_api' %}
 	{% if cookiecutter.deployment_target == 'agent_engine' %}PYTHONPATH=. {% endif %}uv run streamlit run frontend/streamlit_app.py --browser.serverAddress=localhost --server.enableCORS=false --server.enableXsrfProtection=false
 {%- endif %}
 {%- endif %}
@@ -134,6 +133,7 @@ test:
 
 # Run code quality checks (codespell, ruff, mypy)
 lint:
+	uv sync --dev --extra lint
 	uv run codespell
 	uv run ruff check . --diff
 	uv run ruff format . --check --diff
