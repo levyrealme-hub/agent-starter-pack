@@ -1,4 +1,4 @@
-# enhance
+r# enhance
 
 The `enhance` command adds agent-starter-pack capabilities to existing projects without creating a new directory. It's designed for upgrading prototypes to production-ready agents in-place.
 
