@@ -244,7 +244,7 @@ def create(
     skip_checks: bool,
     in_folder: bool,
     agent_directory: str | None,
-    agent_garden: bool,
+    agent_garden: bool = False,
     base_template: str | None = None,
     skip_welcome: bool = False,
     cli_overrides: dict | None = None,
