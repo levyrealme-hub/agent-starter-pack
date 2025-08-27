@@ -74,9 +74,7 @@ export class MultimodalLiveClient extends EventEmitter<MultimodalLiveClientEvent
   private userId?: string;
   constructor({ url, userId, runId }: MultimodalLiveAPIClientConnection) {
     super();
-    // Use relative URL that works with integrated setup and deployments
-    const defaultWsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
-    url = url || defaultWsUrl;
+    url = url || `ws://localhost:8000/ws`;
     this.url = new URL("ws", url).href;
     this.userId = userId;
     this.runId = runId || crypto.randomUUID(); // Ensure runId is always a string by providing default
