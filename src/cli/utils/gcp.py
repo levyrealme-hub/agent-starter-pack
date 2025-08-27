@@ -123,9 +123,8 @@ def _test_vertex_ai_connection(
 def get_user_agent(context: str | None = None) -> str:
     """Returns a custom user agent string."""
     version = get_current_version()
-    if context == "agent-garden":
-        return f"g{version}-{PACKAGE_NAME}/g{version}-{PACKAGE_NAME}"
-    return f"{version}-{PACKAGE_NAME}/{version}-{PACKAGE_NAME}"
+    prefix = "g" if context == "agent-garden" else ""
+    return f"{prefix}{version}-{PACKAGE_NAME}/{prefix}{version}-{PACKAGE_NAME}"
 
 
 def get_client_info(context: str | None = None) -> ClientInfo:
