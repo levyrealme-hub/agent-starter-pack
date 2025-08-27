@@ -441,6 +441,16 @@ function SidePanel({
         </div>
       </div>
       
+      {/* Audio Pulse Bottom Section */}
+      <section className="audio-pulse-bottom">
+        <div className="pulse-container">
+          <AudioPulse volume={volume} active={connected} hover={false} />
+          <span className="pulse-label">
+            {connected ? (volume > 0 ? "AI Speaking..." : "AI Ready") : "Not connected"}
+          </span>
+        </div>
+      </section>
+
       {/* Feedback Overlay Section */}
       {sendFeedback && (
         <div className="feedback-section" style={{

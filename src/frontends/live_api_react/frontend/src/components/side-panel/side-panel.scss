@@ -165,6 +165,15 @@
       display: none;
       transition: all 0.2s ease-in allow-discrete;
     }
+
+    .audio-pulse-bottom {
+      .pulse-container {
+        .pulse-label {
+          opacity: 0;
+          display: none;
+        }
+      }
+    }
   }
 
   .indicators {
@@ -390,6 +399,28 @@
         &.connected {
           color: var(--Blue-500);
         }
+      }
+    }
+  }
+
+  .audio-pulse-bottom {
+    border-top: 1px solid var(--Neutral-20);
+    padding: 12px 25px;
+    flex-shrink: 0;
+    background: var(--Neutral-05);
+
+    .pulse-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+
+      .pulse-label {
+        color: var(--Neutral-80);
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
     }
   }
