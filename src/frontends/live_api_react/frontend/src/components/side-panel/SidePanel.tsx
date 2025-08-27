@@ -206,7 +206,7 @@ function SidePanel({
         body: JSON.stringify({
           score: feedbackScore,
           text: feedbackText,
-          run_id: crypto.randomUUID(),
+          run_id: client.currentRunId,
           user_id: userId,
           log_type: "feedback"
         })

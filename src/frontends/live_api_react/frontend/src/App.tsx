@@ -20,8 +20,10 @@ import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
 import cn from "classnames";
 
-const defaultHost = "localhost:8000";
-const defaultUri = `ws://${defaultHost}/`;
+// In development mode (frontend on :8501), connect to backend on :8000
+const isDevelopment = window.location.port === '8501';
+const defaultHost = isDevelopment ? `${window.location.hostname}:8000` : window.location.host;
+const defaultUri = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${defaultHost}/`;
 
 function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
