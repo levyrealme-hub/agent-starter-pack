@@ -68,7 +68,19 @@ playground:{%- if cookiecutter.agent_name == 'live_api' %} build-frontend{%- end
 {%- endif %}
 backend:
 {%- if cookiecutter.deployment_target == 'cloud_run' %}
-w
+	PROJECT_ID=$$(gcloud config get-value project) && \
+	gcloud beta run deploy {{cookiecutter.project_name}} \
+		--source . \
+		--memory "4Gi" \
+		--project $$PROJECT_ID \
+		--region "us-central1" \
+		--no-allow-unauthenticated \
+		--no-cpu-throttling \
+		--labels "created-by=adk{%- if cookiecutter.agent_garden %},deployed-with=agent-garden{%- endif %}" \
+		--set-env-vars \
+		"COMMIT_SHA=$(shell git rev-parse HEAD){%- if cookiecutter.data_ingestion %}{%- if cookiecutter.datastore_type == "vertex_ai_search" %},DATA_STORE_ID={{cookiecutter.project_name}}-datastore,DATA_STORE_REGION=us{%- elif cookiecutter.datastore_type == "vertex_ai_vector_search" %},VECTOR_SEARCH_INDEX={{cookiecutter.project_name}}-vector-search,VECTOR_SEARCH_INDEX_ENDPOINT={{cookiecutter.project_name}}-vector-search-endpoint,VECTOR_SEARCH_BUCKET=$$PROJECT_ID-{{cookiecutter.project_name}}-vs{%- endif %}{%- endif %}" \
+		$(if $(IAP),--iap) \
+		$(if $(PORT),--port=$(PORT))
 {%- elif cookiecutter.deployment_target == 'agent_engine' %}
 	# Export dependencies to requirements file using uv export.
 	uv export --no-hashes --no-header --no-dev --no-emit-project --no-annotate > .requirements.txt 2>/dev/null || \
