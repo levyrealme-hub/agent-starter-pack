@@ -121,7 +121,7 @@ def _test_vertex_ai_connection(
 
 
 def get_user_agent(context: str | None = None) -> str:
-    """Returns custom user agent header tuple (version, agent string)."""
+    """Returns a custom user agent string."""
     version = get_current_version()
     if context == "agent-garden":
         return f"g{version}-{PACKAGE_NAME}/g{version}-{PACKAGE_NAME}"
