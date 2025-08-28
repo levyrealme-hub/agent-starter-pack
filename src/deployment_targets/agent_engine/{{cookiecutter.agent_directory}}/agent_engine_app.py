@@ -64,20 +64,6 @@ class AgentEngineApp(AdkApp):
         operations = super().register_operations()
         operations[""] = operations[""] + ["register_feedback"]
         return operations
-
-    def clone(self) -> "AgentEngineApp":
-        """Returns a clone of the ADK application."""
-        template_attributes = self._tmpl_attrs
-
-        return self.__class__(
-            agent=copy.deepcopy(template_attributes["agent"]),
-            enable_tracing=bool(template_attributes.get("enable_tracing", False)),
-            session_service_builder=template_attributes.get("session_service_builder"),
-            artifact_service_builder=template_attributes.get(
-                "artifact_service_builder"
-            ),
-            env_vars=template_attributes.get("env_vars"),
-        )
 {%- else %}
 import datetime
 import json
@@ -209,9 +195,9 @@ def deploy_agent_engine_app(
     extra_packages: list[str] = ["./{{cookiecutter.agent_directory}}"],
     env_vars: dict[str, str] = {},
     service_account: str | None = None,
-) -> agent_engines.AgentEngine:
+) -> object:
     """Deploy the agent engine app to Vertex AI."""
-
+    logging.basicConfig(level=logging.INFO)
     staging_bucket_uri = f"gs://{project}-agent-engine"
 {%- if "adk" in cookiecutter.tags %}
     artifacts_bucket_name = f"{project}-{{cookiecutter.project_name}}-logs-data"
@@ -223,7 +209,9 @@ def deploy_agent_engine_app(
         bucket_name=staging_bucket_uri, project=project, location=location
     )
 
-    vertexai.init(project=project, location=location, staging_bucket=staging_bucket_uri)
+    # Initialize the Vertex AI client
+    vertexai.init(project=project, location=location)
+    client = vertexai.Client(project=project, location=location)
 
     # Read requirements
     with open(requirements_file) as f:
@@ -243,29 +231,40 @@ def deploy_agent_engine_app(
 
     # Common configuration for both create and update operations
     agent_config = {
-        "agent_engine": agent_engine,
-        "display_name": agent_name,
-        "description": "{{cookiecutter.agent_description}}",
-        "extra_packages": extra_packages,
-        "env_vars": env_vars,
-        "service_account": service_account,
+        "agent": agent_engine,
+        "config": {
+            "display_name": agent_name,
+            "staging_bucket": staging_bucket_uri,
+            "requirements": requirements,
+            "extra_packages": extra_packages,
+            "env_vars": env_vars,
+            # "service_account": service_account,
+        },
     }
     logging.info(f"Agent config: {agent_config}")
-    agent_config["requirements"] = requirements
 
-    # Check if an agent with this name already exists
-    existing_agents = list(agent_engines.list(filter=f"display_name={agent_name}"))
-    if existing_agents:
+    existing_agent = next(
+        iter(
+            client.agent_engines.list(config={"filter": f'display_name="{agent_name}"'})
+        ),
+        None,
+    )
+
+    if existing_agent:
         # Update the existing agent with new configuration
         logging.info(f"Updating existing agent: {agent_name}")
-        remote_agent = existing_agents[0].update(**agent_config)
+        print(f"Updating existing agent: {agent_name}")
+
+        remote_agent = client.agent_engines.update(
+            name=existing_agent.api_resource.name, **agent_config
+        )
     else:
         # Create a new agent if none exists
         logging.info(f"Creating new agent: {agent_name}")
-        remote_agent = agent_engines.create(**agent_config)
+        remote_agent = client.agent_engines.create(**agent_config)
 
     config = {
-        "remote_agent_engine_id": remote_agent.resource_name,
+        "remote_agent_engine_id": remote_agent.api_resource.name,
         "deployment_timestamp": datetime.datetime.now().isoformat(),
     }
     config_file = "deployment_metadata.json"
