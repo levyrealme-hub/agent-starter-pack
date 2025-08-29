@@ -253,8 +253,6 @@ def deploy_agent_engine_app(
     if existing_agent:
         # Update the existing agent with new configuration
         logging.info(f"Updating existing agent: {agent_name}")
-        print(f"Updating existing agent: {agent_name}")
-
         remote_agent = client.agent_engines.update(
             name=existing_agent.api_resource.name, **agent_config
         )
